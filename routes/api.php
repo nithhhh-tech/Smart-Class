@@ -10,25 +10,20 @@ use App\Http\Controllers\AuthController;
 // ── Public: Device Authentication ───────────────────────────
 Route::post('/device/login', [AuthController::class, 'deviceLogin']);
 
-// ── Protected: ESP32 Endpoints ──────────────────────────────
-Route::middleware('auth:sanctum')->group(function () {
-
-    // Sensor data
-    Route::post('/sensor-logs',           [SensorLogController::class, 'store']);
-    Route::get('/sensor-logs/latest',     [SensorLogController::class, 'latest']);
-
-    // Commands
-    Route::get('/commands/pending',       [DeviceCommandController::class, 'pending']);
-    Route::put('/commands/{id}/executed', [DeviceCommandController::class, 'markExecuted']);
-
-    // Devices
-    Route::apiResource('/devices', DeviceController::class);
-    Route::post('/devices/{id}/toggle',   [DeviceController::class, 'toggle']);
-
-    // Rooms
+// ── Web UI routes: Blade dashboard and management pages ─────
+Route::middleware('auth')->group(function () {
     Route::apiResource('/rooms', RoomController::class);
+    Route::apiResource('/devices', DeviceController::class);
+    Route::post('/devices/{id}/toggle', [DeviceController::class, 'toggle']);
 
-    // Dashboard data
-    Route::get('/dashboard/summary',      [SensorLogController::class, 'summary']);
-    Route::get('/sensor-logs/history',    [SensorLogController::class, 'history']);
+    Route::get('/dashboard/summary', [SensorLogController::class, 'summary']);
+    Route::get('/sensor-logs/history', [SensorLogController::class, 'history']);
+    Route::get('/sensor-logs/latest', [SensorLogController::class, 'latest']);
+});
+
+// ── Protected: ESP32 / device endpoints ──────────────────────
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/sensor-logs', [SensorLogController::class, 'store']);
+    Route::get('/commands/pending', [DeviceCommandController::class, 'pending']);
+    Route::put('/commands/{id}/executed', [DeviceCommandController::class, 'markExecuted']);
 });
