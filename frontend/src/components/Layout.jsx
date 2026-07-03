@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { authService } from '../services/api';
-import { LayoutDashboard, School, Cpu, LogOut, User as UserIcon } from 'lucide-react';
+import { LayoutDashboard, School, Cpu, CalendarDays, LogOut, User as UserIcon } from 'lucide-react';
 
 const Layout = ({ children }) => {
   const navigate = useNavigate();
@@ -82,6 +82,17 @@ const Layout = ({ children }) => {
           >
             <Cpu className="w-3.5 h-3.5" />
             DEVICES
+          </Link>
+          <Link
+            to="/schedules"
+            className={`flex items-center gap-2 px-4 py-2 border transition-all duration-300 ${
+              isActive('/schedules')
+                ? 'border-blue-500 text-blue-400 bg-blue-950/30 shadow-[0_0_15px_rgba(59,130,246,0.15)]'
+                : 'border-blue-950/40 text-slate-400 hover:text-blue-400 hover:border-blue-500/40 bg-[#091124]/20'
+            }`}
+          >
+            <CalendarDays className="w-3.5 h-3.5" />
+            SCHEDULES
           </Link>
         </nav>
 

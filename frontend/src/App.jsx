@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard';
 import Classrooms from './pages/Classrooms';
 import Devices from './pages/Devices';
 import Layout from './components/Layout';
+import Schedules from './pages/Schedules';
 
 // Simple Route Protection wrapper
 const ProtectedRoute = ({ children }) => {
@@ -48,6 +49,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Devices />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/schedules"
+          element={
+            <ProtectedRoute>
+              <Schedules />
             </ProtectedRoute>
           }
         />

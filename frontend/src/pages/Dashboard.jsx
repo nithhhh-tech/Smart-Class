@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { roomService, deviceService, telemetryService } from '../services/api';
-import { Thermometer, Droplets, Activity, RefreshCw, Terminal, Power, Zap, Calendar, Sliders } from 'lucide-react';
+import { roomService, deviceService, telemetryService, alertService } from '../services/api';
+import { Thermometer, Droplets, Activity, RefreshCw, Terminal, Power, Zap, Calendar, Sliders, AlertTriangle } from 'lucide-react';
 import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -28,6 +28,7 @@ ChartJS.register(
 const Dashboard = () => {
   const [rooms, setRooms] = useState([]);
   const [selectedRoomId, setSelectedRoomId] = useState('');
+  const [alerts, setAlerts] = useState([]);
   
   // Telemetry state
   const [telemetry, setTelemetry] = useState({
@@ -135,6 +136,10 @@ const Dashboard = () => {
         setHistoryLogs(historyData);
       }
 
+      // 4. Fetch Active Alerts
+      const alertsData = await alertService.getAlerts(roomId);
+      setAlerts(alertsData);
+
       if (!isPoll) {
         addLog(`Synchronized active room telemetry and ${devicesData.length} device nodes.`, 'info');
       }
@@ -143,6 +148,17 @@ const Dashboard = () => {
       if (!isPoll) {
         addLog('Error reading endpoint telemetry.', 'error');
       }
+    }
+  };
+
+  const handleDismissAlert = async (alertId) => {
+    try {
+      await alertService.dismissAlert(alertId);
+      setAlerts(prev => prev.filter(a => a.id !== alertId));
+      addLog('Alert dismissed successfully.', 'success');
+    } catch (err) {
+      console.error(err);
+      addLog('Failed to dismiss anomaly warning.', 'error');
     }
   };
 
@@ -430,6 +446,46 @@ const Dashboard = () => {
             <span>PING NODE SYNC: SUCCESS</span>
             <span>LAST SYNC: {telemetry.last_update}</span>
           </div>
+        </div>
+      </div>
+
+      {/* Classroom Anomaly Alerts */}
+      <div className="bg-[#091124]/40 border border-blue-950 rounded-2xl p-6 backdrop-blur-md">
+        <div className="flex items-center gap-2 text-rose-400 font-semibold mb-4 text-sm font-mono border-b border-blue-950 pb-2">
+          <AlertTriangle className="w-4 h-4 text-rose-500 animate-pulse" />
+          CLASSROOM ANOMALY ALERTS
+        </div>
+        <div className="space-y-3">
+          {alerts.length === 0 ? (
+            <div className="text-slate-500 text-xs py-4 text-center font-mono">
+              No active anomalies detected. All systems operating normally.
+            </div>
+          ) : (
+            alerts.map(alert => (
+              <div 
+                key={alert.id}
+                className="flex items-center justify-between p-3.5 bg-rose-950/10 border border-rose-950/30 rounded-xl"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-rose-500/10 text-rose-500">
+                    <AlertTriangle className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-bold text-slate-200">{alert.message}</div>
+                    <div className="text-[10px] text-slate-500 uppercase font-mono">
+                      {alert.type} &bull; Triggered at {new Date(alert.triggered_at).toLocaleTimeString()}
+                    </div>
+                  </div>
+                </div>
+                <button
+                  onClick={() => handleDismissAlert(alert.id)}
+                  className="px-3 py-1.5 border border-rose-900/60 text-rose-400 bg-rose-950/20 hover:bg-rose-600 hover:text-white hover:border-rose-600 text-[10px] font-bold rounded transition cursor-pointer"
+                >
+                  DISMISS
+                </button>
+              </div>
+            ))
+          )}
         </div>
       </div>
 

@@ -122,4 +122,37 @@ export const telemetryService = {
   },
 };
 
+// Schedule Management Endpoints
+export const scheduleService = {
+  getSchedules: async (roomId = null) => {
+    const url = roomId ? `/schedules?room_id=${roomId}` : '/schedules';
+    const res = await API.get(url);
+    return res.data.data;
+  },
+  addSchedule: async (roomId, deviceId, command, time, days) => {
+    const res = await API.post('/schedules', {
+      room_id: roomId,
+      device_id: deviceId,
+      command,
+      time,
+      days,
+    });
+    return res.data.data;
+  },
+  deleteSchedule: async (id) => {
+    await API.delete(`/schedules/${id}`);
+  },
+};
+
+// Alert Management Endpoints
+export const alertService = {
+  getAlerts: async (roomId) => {
+    const res = await API.get(`/alerts?room_id=${roomId}`);
+    return res.data.data;
+  },
+  dismissAlert: async (id) => {
+    await API.delete(`/alerts/${id}`);
+  },
+};
+
 export default API;
