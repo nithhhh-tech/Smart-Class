@@ -19,10 +19,55 @@ class SensorLogController extends Controller
 
         $log = SensorLog::create($data);
 
+        // Anomaly Detection Checks
+        $this->detectAnomalies($log);
+
         // Broadcast to dashboard via Pusher (real-time)
         // event(new SensorDataReceived($log));
 
         return response()->json(['message' => 'Logged', 'data' => $log], 201);
+    }
+
+    /**
+     * Helper to detect anomalies and record alerts.
+     */
+    private function detectAnomalies(SensorLog $log): void
+    {
+        // 1. High Temperature (> 35.0°C)
+        if ($log->temperature > 35.0) {
+            \App\Models\Alert::create([
+                'room_id' => $log->room_id,
+                'type' => 'temperature',
+                'message' => "Critical Temperature Warning: High temperature ({$log->temperature}°C) recorded in the classroom.",
+            ]);
+        }
+
+        // 2. Humidity Thresholds (> 85.0% or < 20.0%)
+        if ($log->humidity > 85.0) {
+            \App\Models\Alert::create([
+                'room_id' => $log->room_id,
+                'type' => 'humidity',
+                'message' => "High Humidity Alert: Excessive moisture levels ({$log->humidity}%) detected.",
+            ]);
+        } elseif ($log->humidity < 20.0) {
+            \App\Models\Alert::create([
+                'room_id' => $log->room_id,
+                'type' => 'humidity',
+                'message' => "Low Humidity Alert: Dry air levels ({$log->humidity}%) detected.",
+            ]);
+        }
+
+        // 3. Off-Hours Motion Detection (8 PM - 6 AM)
+        if ($log->motion) {
+            $hour = now()->hour;
+            if ($hour >= 20 || $hour < 6) {
+                \App\Models\Alert::create([
+                    'room_id' => $log->room_id,
+                    'type' => 'motion',
+                    'message' => "Intrusion Warning: Off-hours motion detected at " . now()->format('H:i') . ".",
+                ]);
+            }
+        }
     }
 
     // GET /api/sensor-logs/latest?room_id=1

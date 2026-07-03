@@ -6,6 +6,8 @@ use App\Http\Controllers\DeviceCommandController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\AlertController;
 
 // ── Public: Device Authentication ───────────────────────────
 Route::post('/device/login', [AuthController::class, 'deviceLogin']);
@@ -27,6 +29,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Rooms
     Route::apiResource('/rooms', RoomController::class);
+
+    // Schedules
+    Route::apiResource('/schedules', ScheduleController::class);
+
+    // Alerts
+    Route::apiResource('/alerts', AlertController::class)->only(['index', 'destroy']);
 
     // Dashboard data
     Route::get('/dashboard/summary',      [SensorLogController::class, 'summary']);

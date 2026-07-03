@@ -124,6 +124,19 @@
                 </div>
             </div>
 
+            <!-- Active Alerts & Notifications -->
+            <div class="bg-white dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700/60 rounded-2xl p-6 shadow-sm">
+                <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-6 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-rose-500 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                    Classroom Anomaly Alerts
+                </h3>
+                <div id="alerts-container" class="space-y-3">
+                    <div class="text-gray-500 dark:text-gray-400 text-sm py-4 text-center">Select a classroom to view active alerts.</div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -142,6 +155,7 @@
             const motionDot = document.getElementById('motion-dot');
             const devicesContainer = document.getElementById('devices-container');
             const logsContainer = document.getElementById('logs-container');
+            const alertsContainer = document.getElementById('alerts-container');
             const lastUpdateTime = document.getElementById('last-update-time');
             const refreshBtn = document.getElementById('refresh-btn');
 
@@ -216,7 +230,75 @@
                         console.error(err);
                         logMessage(`Error loading device controls.`, 'error');
                     });
+
+                // Fetch alerts
+                fetchAlerts(roomId);
             }
+
+            // Fetch alerts list
+            function fetchAlerts(roomId) {
+                axios.get(`/api/alerts?room_id=${roomId}`)
+                    .then(response => {
+                        const alerts = response.data.data;
+                        updateAlertsList(alerts, roomId);
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        logMessage(`Error loading active alerts.`, 'error');
+                    });
+            }
+
+            // Update UI alerts list
+            function updateAlertsList(alerts, roomId) {
+                if (alerts.length === 0) {
+                    alertsContainer.innerHTML = '<div class="text-gray-500 dark:text-gray-400 text-sm py-4 text-center">No active anomalies detected. All systems operating normally.</div>';
+                    return;
+                }
+
+                alertsContainer.innerHTML = '';
+                alerts.forEach(alert => {
+                    const row = document.createElement('div');
+                    row.className = 'flex justify-between items-center p-4 bg-red-50/50 dark:bg-rose-950/10 border border-red-100 dark:border-rose-950/20 rounded-xl transition duration-150';
+                    
+                    const triggerDate = new Date(alert.triggered_at).toLocaleTimeString();
+                    
+                    row.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 rounded-lg bg-rose-500/10 text-rose-500 dark:text-rose-400">
+                                <svg class="w-5 h-5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800 dark:text-gray-200">${alert.message}</h4>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">${alert.type} • Triggered at ${triggerDate}</p>
+                            </div>
+                        </div>
+                        <div>
+                            <button 
+                                onclick="dismissAlert(${alert.id}, ${roomId})"
+                                class="px-3 py-1 bg-red-100 dark:bg-rose-950/30 text-red-700 dark:text-rose-400 rounded-lg hover:bg-red-200 dark:hover:bg-rose-950/50 text-xs font-semibold uppercase tracking-wider transition"
+                            >
+                                Dismiss
+                            </button>
+                        </div>
+                    `;
+                    alertsContainer.appendChild(row);
+                });
+            }
+
+            // Dismiss active alert
+            window.dismissAlert = function(id, roomId) {
+                axios.delete(`/api/alerts/${id}`)
+                    .then(() => {
+                        fetchAlerts(roomId);
+                        logMessage('Alert dismissed successfully.', 'success');
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        logMessage('Failed to dismiss alert.', 'error');
+                    });
+            };
 
             // Update UI widgets
             function updateTelemetry(data) {

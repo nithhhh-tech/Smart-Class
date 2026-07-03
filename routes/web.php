@@ -15,6 +15,7 @@ Route::middleware('auth')->group(function () {
     Route::view('/rooms', 'rooms.index')->name('rooms.index');
     Route::view('/devices', 'devices.index')->name('devices.index');
     Route::view('/sensors/history', 'sensors.history')->name('sensors.history');
+    Route::view('/schedules', 'schedules.index')->name('schedules.index');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

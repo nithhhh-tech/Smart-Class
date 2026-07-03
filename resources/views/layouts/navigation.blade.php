@@ -24,6 +24,9 @@
                     <x-nav-link :href="route('sensors.history')" :active="request()->routeIs('sensors.history')">
                         {{ __('Sensor History') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('schedules.index')" :active="request()->routeIs('schedules.index')">
+                        {{ __('Schedules') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -87,6 +90,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('sensors.history')" :active="request()->routeIs('sensors.history')">
                 {{ __('Sensor History') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('schedules.index')" :active="request()->routeIs('schedules.index')">
+                {{ __('Schedules') }}
             </x-responsive-nav-link>
         </div>
 
