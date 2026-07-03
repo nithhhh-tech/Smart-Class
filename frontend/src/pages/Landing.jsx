@@ -120,8 +120,8 @@ const Landing = () => {
         {/* Schematic drawing */}
         <div className="mt-6 border border-blue-950/60 bg-[#091124]/40 backdrop-blur-md p-6 sm:p-10 shadow-xl">
           <div className="flex items-center justify-between mb-6 font-mono text-[10px] uppercase tracking-[0.16em] text-blue-400/70">
-            <span>Fig. 01 &mdash; Node Layout / Classroom A-101</span>
-            <span className="hidden sm:inline">Scale N.T.S.</span>
+            <span>Function &mdash; Node Layout / Smart Classroom</span>
+            <span className="hidden sm:inline">By Team 7 &middot; E5-Y2</span>
           </div>
 
           <svg
@@ -459,8 +459,11 @@ const Landing = () => {
           <a href="#" className="hover:text-cyan-400 transition-colors">
             Documentation
           </a>
-          <a href="#" className="hover:text-cyan-400 transition-colors">
-            Privacy Architecture
+          <a
+            href="/Dashboard"
+            className="hover:text-cyan-400 transition-colors"
+          >
+            Dashboard
           </a>
         </div>
       </footer>

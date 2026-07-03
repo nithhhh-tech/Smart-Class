@@ -1,7 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { authService } from '../services/api';
-import { LayoutDashboard, School, Cpu, LogOut, User as UserIcon } from 'lucide-react';
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { authService } from "../services/api";
+import {
+  LayoutDashboard,
+  School,
+  Cpu,
+  LogOut,
+  User as UserIcon,
+} from "lucide-react";
 
 const Layout = ({ children }) => {
   const navigate = useNavigate();
@@ -9,20 +15,20 @@ const Layout = ({ children }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('auth_user');
+    const storedUser = localStorage.getItem("auth_user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     } else {
-      navigate('/login');
+      navigate("/login");
     }
   }, [navigate]);
 
   const handleLogout = async () => {
     try {
       await authService.logout();
-      navigate('/login');
+      navigate("/login");
     } catch (err) {
-      console.error('Logout error', err);
+      console.error("Logout error", err);
     }
   };
 
@@ -43,8 +49,12 @@ const Layout = ({ children }) => {
             <Cpu className="w-5 h-5 text-blue-400 opacity-90 group-hover:text-cyan-400 transition-colors duration-300" />
           </div>
           <div className="leading-tight">
-            <span className="block text-sm font-semibold tracking-tight text-white font-display group-hover:text-blue-400 transition-colors duration-300">Smart Classroom</span>
-            <span className="block text-[9.5px] font-mono uppercase tracking-[0.18em] text-blue-400/70">Rev. React-SPA &middot; IoT v2</span>
+            <span className="block text-sm font-semibold tracking-tight text-white font-display group-hover:text-blue-400 transition-colors duration-300">
+              Smart Classroom
+            </span>
+            <span className="block text-[9.5px] font-mono uppercase tracking-[0.18em] text-blue-400/70">
+              Rev. React-SPA &middot; IoT v2
+            </span>
           </div>
         </Link>
 
@@ -53,9 +63,9 @@ const Layout = ({ children }) => {
           <Link
             to="/dashboard"
             className={`flex items-center gap-2 px-4 py-2 border transition-all duration-300 ${
-              isActive('/dashboard')
-                ? 'border-blue-500 text-blue-400 bg-blue-950/30 shadow-[0_0_15px_rgba(59,130,246,0.15)]'
-                : 'border-blue-950/40 text-slate-400 hover:text-blue-400 hover:border-blue-500/40 bg-[#091124]/20'
+              isActive("/dashboard")
+                ? "border-blue-500 text-blue-400 bg-blue-950/30 shadow-[0_0_15px_rgba(59,130,246,0.15)]"
+                : "border-blue-950/40 text-slate-400 hover:text-blue-400 hover:border-blue-500/40 bg-[#091124]/20"
             }`}
           >
             <LayoutDashboard className="w-3.5 h-3.5" />
@@ -64,9 +74,9 @@ const Layout = ({ children }) => {
           <Link
             to="/classrooms"
             className={`flex items-center gap-2 px-4 py-2 border transition-all duration-300 ${
-              isActive('/classrooms')
-                ? 'border-blue-500 text-blue-400 bg-blue-950/30 shadow-[0_0_15px_rgba(59,130,246,0.15)]'
-                : 'border-blue-950/40 text-slate-400 hover:text-blue-400 hover:border-blue-500/40 bg-[#091124]/20'
+              isActive("/classrooms")
+                ? "border-blue-500 text-blue-400 bg-blue-950/30 shadow-[0_0_15px_rgba(59,130,246,0.15)]"
+                : "border-blue-950/40 text-slate-400 hover:text-blue-400 hover:border-blue-500/40 bg-[#091124]/20"
             }`}
           >
             <School className="w-3.5 h-3.5" />
@@ -75,9 +85,9 @@ const Layout = ({ children }) => {
           <Link
             to="/devices"
             className={`flex items-center gap-2 px-4 py-2 border transition-all duration-300 ${
-              isActive('/devices')
-                ? 'border-blue-500 text-blue-400 bg-blue-950/30 shadow-[0_0_15px_rgba(59,130,246,0.15)]'
-                : 'border-blue-950/40 text-slate-400 hover:text-blue-400 hover:border-blue-500/40 bg-[#091124]/20'
+              isActive("/devices")
+                ? "border-blue-500 text-blue-400 bg-blue-950/30 shadow-[0_0_15px_rgba(59,130,246,0.15)]"
+                : "border-blue-950/40 text-slate-400 hover:text-blue-400 hover:border-blue-500/40 bg-[#091124]/20"
             }`}
           >
             <Cpu className="w-3.5 h-3.5" />
@@ -109,11 +119,31 @@ const Layout = ({ children }) => {
       </main>
 
       {/* Footer */}
-      <footer className="w-full max-w-7xl mx-auto px-6 py-6 border-t border-blue-950/40 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-blue-400/50 font-mono relative z-10 bg-[#030712]/30 backdrop-blur-md">
-        <p>&copy; {new Date().getFullYear()} Smart Classroom Hub. Decoupled Architecture.</p>
+      <footer className="w-full max-w-6xl mx-auto px-6 py-8 border-t border-blue-950/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-blue-400/60 font-mono relative z-10 bg-[#030712]/40 backdrop-blur-sm">
+        <div>
+          <ul>
+            <li>
+              <h3 className="font-bold text-blue-400/90 mb-2">Team Members</h3>
+              <p>Van Phanith</p>
+              <p>Lon livireakboth</p>
+              <p>Lun Lytayhok</p>
+              <p>Van Chanvisal</p>
+              <p>Rith Chanpanha</p>
+              <p>Rim Pharun</p>
+            </li>
+          </ul>
+        </div>
+        <p>
+          &copy; {new Date().getFullYear()} Smart Classroom Hub.​Create by Team
+          7 &middot; E5-Y2.
+        </p>
         <div className="flex gap-6">
-          <a href="#" className="hover:text-cyan-400 transition-colors">Documentation</a>
-          <a href="#" className="hover:text-cyan-400 transition-colors">Privacy Architecture</a>
+          <a href="/" className="hover:text-cyan-400 transition-colors">
+            Documentation
+          </a>
+          <a href="#" className="hover:text-cyan-400 transition-colors">
+            Refresh
+          </a>
         </div>
       </footer>
     </div>

@@ -1,16 +1,21 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Landing from './pages/Landing';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import Classrooms from './pages/Classrooms';
-import Devices from './pages/Devices';
-import Layout from './components/Layout';
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import Landing from "./pages/Landing";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
+import Classrooms from "./pages/Classrooms";
+import Devices from "./pages/Devices";
+import Layout from "./components/Layout";
 
 // Simple Route Protection wrapper
 const ProtectedRoute = ({ children }) => {
-  const token = localStorage.getItem('auth_token');
+  const token = localStorage.getItem("auth_token");
   if (!token) {
     return <Navigate to="/login" replace />;
   }
