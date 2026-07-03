@@ -11,7 +11,7 @@ class DeviceController extends Controller
     // GET /api/devices?room_id=1
     public function index(Request $request)
     {
-        $query = Device::query();
+        $query = Device::with('room');
         if ($request->has('room_id')) {
             $query->where('room_id', $request->room_id);
         }
@@ -67,20 +67,16 @@ class DeviceController extends Controller
     public function toggle($id)
     {
         $device = Device::findOrFail($id);
-        
-        // Find if there is a pending command first, or base it on status
-        $pendingCommand = DeviceCommand::where('device_id', $device->id)
-            ->where('status', 'pending')
-            ->latest()
-            ->first();
 
-        if ($pendingCommand) {
-            $targetCommand = $pendingCommand->command === 'on' ? 'off' : 'on';
-        } else {
-            $targetCommand = $device->status ? 'off' : 'on';
-        }
+        // Flip the device status immediately for UI responsiveness
+        $newStatus = !$device->status;
+        $targetCommand = $newStatus ? 'on' : 'off';
 
-        $cmd = DeviceCommand::create([
+        // Update device status
+        $device->update(['status' => $newStatus]);
+
+        // Queue a command for the ESP32 to pick up
+        DeviceCommand::create([
             'device_id' => $device->id,
             'command'   => $targetCommand,
             'status'    => 'pending',
@@ -88,7 +84,7 @@ class DeviceController extends Controller
 
         return response()->json([
             'message' => "Toggle command '$targetCommand' queued",
-            'data'    => $cmd,
+            'data'    => $device->fresh(),
         ]);
     }
 }
