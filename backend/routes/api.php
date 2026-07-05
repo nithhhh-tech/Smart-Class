@@ -9,6 +9,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Api\ApiAuthController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\AlertController;
+use App\Http\Controllers\HolidayController;
 
 // ── Public: User Authentication ─────────────────────────────
 Route::post('/register', [ApiAuthController::class, 'register']);
@@ -31,6 +32,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Schedules & Alerts
     Route::apiResource('/schedules', ScheduleController::class);
     Route::apiResource('/alerts', AlertController::class)->only(['index', 'destroy']);
+    Route::apiResource('/holidays', HolidayController::class)->only(['index', 'store', 'destroy']);
 
     // Telemetry Dashboard
     Route::get('/dashboard/summary', [SensorLogController::class, 'summary']);

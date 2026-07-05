@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'http://localhost:8000/api',
+  baseURL: 'http://192.168.1.209:8000/api',
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
@@ -141,6 +141,24 @@ export const scheduleService = {
   },
   deleteSchedule: async (id) => {
     await API.delete(`/schedules/${id}`);
+  },
+};
+
+// Holiday Management Endpoints
+export const holidayService = {
+  getHolidays: async () => {
+    const res = await API.get('/holidays');
+    return res.data.data;
+  },
+  addHoliday: async (name, holidayDate) => {
+    const res = await API.post('/holidays', {
+      name,
+      holiday_date: holidayDate,
+    });
+    return res.data.data;
+  },
+  deleteHoliday: async (id) => {
+    await API.delete(`/holidays/${id}`);
   },
 };
 
