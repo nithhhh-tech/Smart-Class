@@ -277,10 +277,13 @@ const Dashboard = () => {
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white font-display flex items-center gap-2">
             <span className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
-            Control Room Dashboard
+            <span className="font-sans">ផ្ទាំងគ្រប់គ្រងបន្ទប់បញ្ជា </span>
+            (Control Room Dashboard)
           </h1>
-          <p className="text-xs text-slate-400 font-mono">
-            LIVE ENVIRONMENTAL MONITORING SYSTEM
+
+          <p className="text-xs py-1 text-slate-400 font-mono">
+            <span className="font-sans">ប្រព័ន្ធតាមដានបរិស្ថានផ្ទាល់</span>(LIVE
+            ENVIRONMENTAL MONITORING SYSTEM)
           </p>
         </div>
 
@@ -357,8 +360,9 @@ const Dashboard = () => {
             <Thermometer className="w-16 h-16 text-amber-500" />
           </div>
           <div className="flex justify-between items-center mb-2">
-            <span className="text-xs font-semibold tracking-wider text-amber-500 uppercase font-mono">
-              Temperature
+            <span className="text-xl font-semibold tracking-wider text-amber-500 uppercase font-sans">
+              សីតុណ្ហភាព{" "}
+              <span className="text-xl font-mono">(TEMPERATURE)</span>
             </span>
             <span className="flex h-2 w-2 relative">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
@@ -382,8 +386,8 @@ const Dashboard = () => {
             <Droplets className="w-16 h-16 text-blue-500" />
           </div>
           <div className="flex justify-between items-center mb-2">
-            <span className="text-xs font-semibold tracking-wider text-blue-400 uppercase font-mono">
-              Humidity
+            <span className="text-xl font-semibold tracking-wider text-blue-400 uppercase font-sans">
+              សំណើម <span className="text-xl font-mono">(HUMIDITY)</span>
             </span>
             <span className="flex h-2 w-2 relative">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
@@ -414,9 +418,9 @@ const Dashboard = () => {
           </div>
           <div className="flex justify-between items-center mb-2">
             <span
-              className={`text-xs font-semibold tracking-wider uppercase font-mono ${telemetry.motion ? "text-rose-400" : "text-slate-400"}`}
+              className={`text-xl font-semibold tracking-wider uppercase font-sans ${telemetry.motion ? "text-rose-400" : "text-slate-400"}`}
             >
-              Motion Status
+              ស្ថានភាពចលនា <span className="text-xl font-mono">(MOTION)</span>
             </span>
             <span className="flex h-2 w-2 relative">
               <span
@@ -444,7 +448,8 @@ const Dashboard = () => {
         <div className="bg-[#091124]/40 border border-blue-950 rounded-2xl p-6 backdrop-blur-md relative overflow-hidden">
           <div className="flex items-center gap-2 text-blue-400 font-semibold mb-4 text-sm font-mono border-b border-blue-950 pb-2">
             <Zap className="w-4 h-4 text-yellow-500" />
-            DEVICE POWER CONSOLE
+            <span className="text-xl font-sans">ផ្ទាំងបញ្ជាថាមពលឧបករណ៍</span>
+            (DEVICE POWER CONSOLE)
           </div>
 
           <div className="space-y-4 max-h-[300px] overflow-y-auto custom-scrollbar">
@@ -525,7 +530,10 @@ const Dashboard = () => {
           </div>
 
           <div className="mt-3 pt-3 border-t border-blue-950/40 flex justify-between items-center text-[10px] text-slate-500 font-mono">
-            <span>PING NODE SYNC: SUCCESS</span>
+            <span>
+              <span className="font-sans">ពិនិត្យការតភ្ជាប់</span> (PING NODE
+              SYNC): SUCCESS
+            </span>
             <span>LAST SYNC: {telemetry.last_update}</span>
           </div>
         </div>
@@ -541,8 +549,8 @@ const Dashboard = () => {
           </h3>
           <div className="h-64 relative">
             {historyLogs.length === 0 ? (
-              <div className="absolute inset-0 flex items-center justify-center text-xs text-slate-500 font-mono">
-                No telemetry recorded for this timeframe.
+              <div className="absolute inset-0 flex items-center justify-center text-xs text-slate-500 font-sans">
+                គ្មានទិន្នន័យតេឡេម៉ាទ្រីត្រូវបានកត់ត្រាទុកសម្រាប់ចន្លោះពេលនេះទេ
               </div>
             ) : (
               <Line data={tempChartData} options={chartOptions} />
@@ -558,8 +566,8 @@ const Dashboard = () => {
           </h3>
           <div className="h-64 relative">
             {historyLogs.length === 0 ? (
-              <div className="absolute inset-0 flex items-center justify-center text-xs text-slate-500 font-mono">
-                No telemetry recorded for this timeframe.
+              <div className="absolute inset-0 flex items-center justify-center text-xs text-slate-500 font-sans">
+                គ្មានទិន្នន័យតេឡេម៉ាទ្រីត្រូវបានកត់ត្រាទុកសម្រាប់ចន្លោះពេលនេះទេ
               </div>
             ) : (
               <Line data={humidityChartData} options={chartOptions} />
@@ -590,9 +598,9 @@ const Dashboard = () => {
                 <tr>
                   <td
                     colSpan="4"
-                    className="px-6 py-8 text-center text-slate-500"
+                    className="px-6 py-8 text-center font-sans text-slate-500"
                   >
-                    Select a classroom to display historical logs.
+                    ជ្រើសរើសបន្ទប់សិក្សាដើម្បីបង្ហាញកំណត់ត្រាប្រវត្តិទិន្នន័យ។
                   </td>
                 </tr>
               ) : (
