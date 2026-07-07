@@ -371,16 +371,16 @@ const Schedules = () => {
                         </td>
                         <td className="py-3 px-3">
                           <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                            schedule.command === 'on' 
+                            schedule.action === 'on' 
                               ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
                               : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
                           }`}>
-                            {schedule.command.toUpperCase()}
+                            {schedule.action?.toUpperCase()}
                           </span>
                         </td>
                         <td className="py-3 px-3 text-white flex items-center gap-1.5 font-sans">
                           <Clock className="w-3.5 h-3.5 text-blue-400" />
-                          {schedule.time.substring(0, 5)}
+                          {(schedule.run_at || '').substring(0, 5)}
                         </td>
                         <td className="py-3 px-3 text-slate-400 max-w-[150px] truncate">
                           {Array.isArray(schedule.days) ? schedule.days.join(', ') : schedule.days}

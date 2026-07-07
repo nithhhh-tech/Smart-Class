@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'http://192.168.1.209:8000/api',
+  baseURL: 'http://172.20.10.5:8000/api',
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
@@ -133,9 +133,9 @@ export const scheduleService = {
     const res = await API.post('/schedules', {
       room_id: roomId,
       device_id: deviceId,
-      command,
-      time,
-      days,
+      action: command,
+      run_at: time.substring(0, 5),
+      days: Array.isArray(days) ? days.join(',') : days,
     });
     return res.data.data;
   },

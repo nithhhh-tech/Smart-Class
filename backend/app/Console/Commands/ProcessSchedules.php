@@ -30,7 +30,7 @@ class ProcessSchedules extends Command
     {
         $now = Carbon::now();
         $currentTime = $now->format('H:i');
-        $currentDay = strtolower($now->format('D')); // e.g. mon, tue, wed...
+        $currentDay = strtolower($now->format('l')); // e.g. monday, tuesday, wednesday...
 
         $this->info("Scanning schedules matching Day: {$currentDay} | Time: {$currentTime}");
 

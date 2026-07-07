@@ -52,12 +52,15 @@ const Dashboard = () => {
   ]);
 
   const pollingRef = useRef(null);
-  const terminalEndRef = useRef(null);
+  const terminalContainerRef = useRef(null);
 
   // Auto-scroll console
   useEffect(() => {
-    if (terminalEndRef.current) {
-      terminalEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    if (terminalContainerRef.current) {
+      terminalContainerRef.current.scrollTo({
+        top: terminalContainerRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
     }
   }, [consoleLogs]);
 
@@ -425,7 +428,10 @@ const Dashboard = () => {
               SYSTEM TELEMETRY TERMINAL LOG
             </div>
             
-            <div className="bg-[#030712] rounded-xl p-4 font-mono text-[11px] text-emerald-400 border border-blue-950 h-56 overflow-y-auto space-y-1.5 custom-scrollbar">
+            <div 
+              ref={terminalContainerRef}
+              className="bg-[#030712] rounded-xl p-4 font-mono text-[11px] text-emerald-400 border border-blue-950 h-56 overflow-y-auto space-y-1.5 custom-scrollbar"
+            >
               {consoleLogs.map((log, index) => {
                 let colorClass = 'text-emerald-400';
                 if (log.type === 'error') colorClass = 'text-rose-400';
@@ -438,7 +444,6 @@ const Dashboard = () => {
                   </div>
                 );
               })}
-              <div ref={terminalEndRef} />
             </div>
           </div>
 
