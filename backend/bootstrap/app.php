@@ -21,6 +21,4 @@ $app = Application::configure(basePath: dirname(__DIR__))
         //
     })->create();
 
-$app->useDatabasePath(dirname(dirname(__DIR__)) . '/database');
-
 return $app;
