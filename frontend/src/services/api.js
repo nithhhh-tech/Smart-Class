@@ -104,6 +104,14 @@ export const deviceService = {
   deleteDevice: async (id) => {
     await API.delete(`/devices/${id}`);
   },
+  updateDevice: async (id, roomId, name, type) => {
+    const res = await API.put(`/devices/${id}`, {
+      room_id: roomId,
+      name,
+      type,
+    });
+    return res.data.data;
+  },
   toggleDevice: async (id) => {
     const res = await API.post(`/devices/${id}/toggle`);
     return res.data.data;

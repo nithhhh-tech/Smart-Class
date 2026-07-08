@@ -44,7 +44,6 @@ const Layout = ({ children }) => {
           </div>
           <div className="leading-tight">
             <span className="block text-sm font-semibold tracking-tight text-white font-display group-hover:text-blue-400 transition-colors duration-300">Smart Classroom</span>
-            <span className="block text-[9.5px] font-mono uppercase tracking-[0.18em] text-blue-400/70">Rev. React-SPA &middot; IoT v2</span>
           </div>
         </Link>
 

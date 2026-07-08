@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { deviceService, roomService } from '../services/api';
-import { Cpu, Lightbulb, Wind, Plus, X, Loader, Power, Trash2, FolderPlus } from 'lucide-react';
+import { Cpu, Lightbulb, Wind, Plus, X, Loader, Power, Trash2, FolderPlus, Edit2 } from 'lucide-react';
 
 const Devices = () => {
   const [devices, setDevices] = useState([]);
@@ -10,6 +10,7 @@ const Devices = () => {
   const [roomsLoading, setRoomsLoading] = useState(false);
 
   // Form states
+  const [editingDevice, setEditingDevice] = useState(null);
   const [selectedRoomId, setSelectedRoomId] = useState('');
   const [deviceName, setDeviceName] = useState('');
   const [deviceType, setDeviceType] = useState('light');
@@ -34,6 +35,9 @@ const Devices = () => {
 
   const handleOpenForm = async () => {
     setShowForm(true);
+    setEditingDevice(null);
+    setDeviceName('');
+    setDeviceType('light');
     setRoomsLoading(true);
     setError('');
     try {
@@ -50,6 +54,25 @@ const Devices = () => {
     }
   };
 
+  const handleEdit = async (device) => {
+    setEditingDevice(device);
+    setShowForm(true);
+    setDeviceName(device.name);
+    setDeviceType(device.type);
+    setSelectedRoomId(device.room_id);
+    setRoomsLoading(true);
+    setError('');
+    try {
+      const data = await roomService.getRooms();
+      setRooms(data);
+    } catch (err) {
+      console.error(err);
+      setError('Could not retrieve classrooms list.');
+    } finally {
+      setRoomsLoading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -57,13 +80,18 @@ const Devices = () => {
     setSaving(true);
 
     try {
-      await deviceService.addDevice(selectedRoomId, deviceName, deviceType);
+      if (editingDevice) {
+        await deviceService.updateDevice(editingDevice.id, selectedRoomId, deviceName, deviceType);
+        setEditingDevice(null);
+      } else {
+        await deviceService.addDevice(selectedRoomId, deviceName, deviceType);
+      }
       setDeviceName('');
       setShowForm(false);
       fetchDevices();
     } catch (err) {
       console.error(err);
-      setError('Failed to register device. Please try again.');
+      setError(editingDevice ? 'Failed to update device.' : 'Failed to register device. Please try again.');
     } finally {
       setSaving(false);
     }
@@ -124,12 +152,12 @@ const Devices = () => {
         </button>
       </div>
 
-      {/* Inline Form to Add Device */}
+      {/* Inline Form to Add/Edit Device */}
       {showForm && (
         <div className="max-w-lg bg-[#091124]/40 border border-blue-950/80 rounded-2xl p-6 backdrop-blur-md shadow-lg tick-corners">
           <h3 className="text-sm font-bold text-slate-200 mb-4 font-mono flex items-center gap-2 uppercase">
             <FolderPlus className="w-4 h-4 text-blue-400" />
-            Register New Device Node
+            {editingDevice ? `Edit Device Node #${editingDevice.id}` : 'Register New Device Node'}
           </h3>
 
           {error && (
@@ -205,6 +233,7 @@ const Devices = () => {
                 type="button"
                 onClick={() => {
                   setShowForm(false);
+                  setEditingDevice(null);
                   setDeviceName('');
                   setError('');
                 }}
@@ -220,10 +249,10 @@ const Devices = () => {
                 {saving ? (
                   <>
                     <Loader className="w-3.5 h-3.5 animate-spin" />
-                    REGISTERING...
+                    {editingDevice ? 'SAVING...' : 'REGISTERING...'}
                   </>
                 ) : (
-                  'REGISTER'
+                  editingDevice ? 'SAVE CHANGES' : 'REGISTER'
                 )}
               </button>
             </div>
@@ -301,7 +330,14 @@ const Devices = () => {
                   </div>
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-blue-950/60 flex justify-end">
+                <div className="mt-6 pt-4 border-t border-blue-950/60 flex justify-between gap-2">
+                  <button
+                    onClick={() => handleEdit(device)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 border border-blue-900 text-blue-400 bg-blue-950/10 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-300 font-mono text-[10px] cursor-pointer rounded"
+                  >
+                    <Edit2 className="w-3.5 h-3.5" />
+                    EDIT
+                  </button>
                   <button
                     onClick={() => handleDelete(device.id, device.name)}
                     className="flex items-center gap-1.5 px-3 py-1.5 border border-rose-950 text-rose-400 bg-rose-950/10 hover:bg-rose-500 hover:text-white hover:border-rose-500 transition-all duration-300 font-mono text-[10px] cursor-pointer rounded"
