@@ -64,7 +64,8 @@ class ProcessAutomation extends Command
                 ->latest('recorded_at')
                 ->first();
 
-            // 3. ENERGY SAVING AUTOMATION: If no motion detected for $inactivitySeconds
+            // 3. ENERGY SAVING AUTOMATION: Temporarily disabled (PIR sensor hardware fix pending)
+            /*
             if (!$recentMotion) {
                 $this->info("-> No motion detected in the last {$inactivitySeconds} seconds.");
 
@@ -101,42 +102,43 @@ class ProcessAutomation extends Command
                 }
             } else {
                 $this->info("-> Motion detected. Classroom is active.");
+            }
+            */
 
-                // 4. CLIMATE CONTROL AUTOMATION: Turn on Fan if temperature is high and people are inside
-                if ($latestLog && $latestLog->temperature >= $tempThreshold) {
-                    $this->info("-> Temperature {$latestLog->temperature}°C is above threshold {$tempThreshold}°C.");
+            // 4. CLIMATE CONTROL AUTOMATION: Turn on Fan if temperature is high (Bypassed PIR motion check for testing)
+            if ($latestLog && $latestLog->temperature >= $tempThreshold) {
+                $this->info("-> Temperature {$latestLog->temperature}°C is above threshold {$tempThreshold}°C.");
 
-                    // Find any fans in this room that are currently OFF
-                    $inactiveFans = Device::where('room_id', $room->id)
-                        ->where('type', 'fan')
-                        ->where('status', false)
-                        ->get();
+                // Find any fans in this room that are currently OFF
+                $inactiveFans = Device::where('room_id', $room->id)
+                    ->where('type', 'fan')
+                    ->where('status', false)
+                    ->get();
 
-                    if ($inactiveFans->isNotEmpty()) {
-                        foreach ($inactiveFans as $fan) {
-                            $pendingOn = DeviceCommand::where('device_id', $fan->id)
-                                ->where('command', 'on')
-                                ->where('status', 'pending')
-                                ->exists();
+                if ($inactiveFans->isNotEmpty()) {
+                    foreach ($inactiveFans as $fan) {
+                        $pendingOn = DeviceCommand::where('device_id', $fan->id)
+                            ->where('command', 'on')
+                            ->where('status', 'pending')
+                            ->exists();
 
-                            if (!$pendingOn) {
-                                DeviceCommand::create([
-                                    'device_id' => $fan->id,
-                                    'command'   => 'on',
-                                    'status'    => 'pending',
-                                ]);
-                                $fan->update(['status' => true]);
-                                $this->info("-> Queued AUTO-ON command for Fan: {$fan->name}");
-                            }
+                        if (!$pendingOn) {
+                            DeviceCommand::create([
+                                'device_id' => $fan->id,
+                                'command'   => 'on',
+                                'status'    => 'pending',
+                            ]);
+                            $fan->update(['status' => true]);
+                            $this->info("-> Queued AUTO-ON command for Fan: {$fan->name}");
                         }
-
-                        // Log an info alert
-                        Alert::create([
-                            'room_id' => $room->id,
-                            'type'    => 'info',
-                            'message' => "Climate Control: Temperature is high ({$latestLog->temperature}°C). Automatically activated fan.",
-                        ]);
                     }
+
+                    // Log an info alert
+                    Alert::create([
+                        'room_id' => $room->id,
+                        'type'    => 'info',
+                        'message' => "Climate Control: Temperature is high ({$latestLog->temperature}°C). Automatically activated fan.",
+                    ]);
                 }
             }
 
