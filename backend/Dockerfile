@@ -40,5 +40,5 @@ RUN chown -R www-data:www-data storage bootstrap/cache
 # Expose port 80
 EXPOSE 80
 
-# Start Apache
-CMD php artisan migrate --force && apache2-foreground
+# Start Apache and Laravel Schedule Worker in background
+CMD php artisan migrate --force && (php artisan schedule:work &) && apache2-foreground
