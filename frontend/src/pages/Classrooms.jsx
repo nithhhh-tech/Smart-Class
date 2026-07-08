@@ -210,7 +210,7 @@ const Classrooms = () => {
                   htmlFor="temp-threshold"
                   className="block text-[11px] font-semibold uppercase tracking-wider text-blue-300/80 mb-2 font-mono"
                 >
-                  Fan Temp Threshold (°C)
+                  Auto-Fan Temp (°C)
                 </label>
                 <input
                   id="temp-threshold"
@@ -231,7 +231,7 @@ const Classrooms = () => {
                   htmlFor="motion-timeout"
                   className="block text-[11px] font-semibold uppercase tracking-wider text-blue-300/80 mb-2 font-mono"
                 >
-                  Inactivity Timeout (Sec)
+                  Auto-Off Delay (Seconds)
                 </label>
                 <input
                   id="motion-timeout"
@@ -323,13 +323,13 @@ const Classrooms = () => {
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-slate-500">FAN TEMP THRESHOLD:</span>
+                    <span className="text-slate-500">AUTO-FAN TEMP:</span>
                     <span className="text-slate-300 font-semibold">
                       {room.temp_threshold !== undefined && room.temp_threshold !== null ? `${room.temp_threshold}°C` : '30.0°C'}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-slate-500">INACTIVITY TIMEOUT:</span>
+                    <span className="text-slate-500">AUTO-OFF TIMER:</span>
                     <span className="text-slate-300 font-semibold">
                       {room.motion_timeout !== undefined && room.motion_timeout !== null ? `${room.motion_timeout}s` : '900s'}
                     </span>
