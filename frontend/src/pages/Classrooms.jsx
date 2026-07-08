@@ -8,6 +8,7 @@ import {
   X,
   Loader,
   FolderPlus,
+  Edit2,
 } from "lucide-react";
 
 const Classrooms = () => {
@@ -16,8 +17,11 @@ const Classrooms = () => {
   const [showForm, setShowForm] = useState(false);
 
   // Form states
+  const [editingRoom, setEditingRoom] = useState(null);
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
+  const [tempThreshold, setTempThreshold] = useState("30");
+  const [motionTimeout, setMotionTimeout] = useState("900");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -37,6 +41,26 @@ const Classrooms = () => {
     fetchRooms();
   }, []);
 
+  const handleOpenForm = () => {
+    setShowForm(true);
+    setEditingRoom(null);
+    setName("");
+    setLocation("");
+    setTempThreshold("30");
+    setMotionTimeout("900");
+    setError("");
+  };
+
+  const handleEdit = (room) => {
+    setEditingRoom(room);
+    setShowForm(true);
+    setName(room.name);
+    setLocation(room.location || "");
+    setTempThreshold(room.temp_threshold || "30");
+    setMotionTimeout(room.motion_timeout || "900");
+    setError("");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -44,14 +68,32 @@ const Classrooms = () => {
     setSaving(true);
 
     try {
-      await roomService.addRoom(name, location);
+      if (editingRoom) {
+        await roomService.updateRoom(
+          editingRoom.id,
+          name,
+          location,
+          parseFloat(tempThreshold),
+          parseInt(motionTimeout),
+        );
+        setEditingRoom(null);
+      } else {
+        await roomService.addRoom(
+          name,
+          location,
+          parseFloat(tempThreshold),
+          parseInt(motionTimeout),
+        );
+      }
       setName("");
       setLocation("");
+      setTempThreshold("30");
+      setMotionTimeout("900");
       setShowForm(false);
       fetchRooms();
     } catch (err) {
       console.error(err);
-      setError("Failed to create classroom. Please try again.");
+      setError(editingRoom ? "Failed to update classroom." : "Failed to create classroom. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -88,7 +130,14 @@ const Classrooms = () => {
         </div>
 
         <button
-          onClick={() => setShowForm(!showForm)}
+          onClick={() => {
+            if (showForm) {
+              setShowForm(false);
+              setEditingRoom(null);
+            } else {
+              handleOpenForm();
+            }
+          }}
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-display font-semibold text-xs transition-all duration-300 rounded-lg cursor-pointer shadow-md"
         >
           {showForm ? (
@@ -105,12 +154,12 @@ const Classrooms = () => {
         </button>
       </div>
 
-      {/* Inline Form to Add Classroom */}
+      {/* Inline Form to Add/Edit Classroom */}
       {showForm && (
         <div className="max-w-lg bg-[#091124]/40 border border-blue-950/80 rounded-2xl p-6 backdrop-blur-md shadow-lg tick-corners">
           <h3 className="text-sm font-bold text-slate-200 mb-4 font-mono flex items-center gap-2 uppercase">
             <FolderPlus className="w-4 h-4 text-blue-400" />
-            Add New Classroom
+            {editingRoom ? `Edit Classroom Space #${editingRoom.id}` : 'Add New Classroom'}
           </h3>
 
           {error && (
@@ -155,11 +204,54 @@ const Classrooms = () => {
               />
             </div>
 
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label
+                  htmlFor="temp-threshold"
+                  className="block text-[11px] font-semibold uppercase tracking-wider text-blue-300/80 mb-2 font-mono"
+                >
+                  Fan Temp Threshold (°C)
+                </label>
+                <input
+                  id="temp-threshold"
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  max="50"
+                  required
+                  value={tempThreshold}
+                  onChange={(e) => setTempThreshold(e.target.value)}
+                  placeholder="e.g. 30.0"
+                  className="w-full px-4 py-2.5 bg-[#030712]/60 border border-blue-950 rounded-lg text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition duration-150 font-mono text-xs"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="motion-timeout"
+                  className="block text-[11px] font-semibold uppercase tracking-wider text-blue-300/80 mb-2 font-mono"
+                >
+                  Inactivity Timeout (Sec)
+                </label>
+                <input
+                  id="motion-timeout"
+                  type="number"
+                  min="5"
+                  required
+                  value={motionTimeout}
+                  onChange={(e) => setMotionTimeout(e.target.value)}
+                  placeholder="e.g. 900 (15m), 30 (demo)"
+                  className="w-full px-4 py-2.5 bg-[#030712]/60 border border-blue-950 rounded-lg text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition duration-150 font-mono text-xs"
+                />
+              </div>
+            </div>
+
             <div className="flex gap-2 justify-end pt-2">
               <button
                 type="button"
                 onClick={() => {
                   setShowForm(false);
+                  setEditingRoom(null);
                   setName("");
                   setLocation("");
                   setError("");
@@ -179,7 +271,7 @@ const Classrooms = () => {
                     SAVING...
                   </>
                 ) : (
-                  "SAVE ROOM"
+                  editingRoom ? "SAVE CHANGES" : "ADD ROOM"
                 )}
               </button>
             </div>
@@ -223,15 +315,36 @@ const Classrooms = () => {
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-blue-950/60 flex justify-between items-center text-xs font-mono">
-                  <span className="text-slate-500">ACTIVE DEVICE NODES:</span>
-                  <span className="font-bold text-blue-400">
-                    {room.devices_count || 0}
-                  </span>
+                <div className="mt-4 pt-4 border-t border-blue-950/60 space-y-2 text-[11px] font-mono">
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-500">ACTIVE DEVICE NODES:</span>
+                    <span className="font-bold text-blue-400">
+                      {room.devices_count || 0}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-500">FAN TEMP THRESHOLD:</span>
+                    <span className="text-slate-300 font-semibold">
+                      {room.temp_threshold !== undefined && room.temp_threshold !== null ? `${room.temp_threshold}°C` : '30.0°C'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-500">INACTIVITY TIMEOUT:</span>
+                    <span className="text-slate-300 font-semibold">
+                      {room.motion_timeout !== undefined && room.motion_timeout !== null ? `${room.motion_timeout}s` : '900s'}
+                    </span>
+                  </div>
                 </div>
               </div>
 
-              <div className="mt-6 pt-4 border-t border-blue-950/60 flex justify-end">
+              <div className="mt-6 pt-4 border-t border-blue-950/60 flex justify-between gap-2">
+                <button
+                  onClick={() => handleEdit(room)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 border border-blue-900 text-blue-400 bg-blue-950/10 hover:bg-blue-600 hover:text-white hover:border-blue-500 transition-all duration-300 font-mono text-[10px] cursor-pointer rounded"
+                >
+                  <Edit2 className="w-3.5 h-3.5" />
+                  EDIT
+                </button>
                 <button
                   onClick={() => handleDelete(room.id, room.name)}
                   className="flex items-center gap-1.5 px-3 py-1.5 border border-rose-950 text-rose-400 bg-rose-950/10 hover:bg-rose-500 hover:text-white hover:border-rose-500 transition-all duration-300 font-mono text-[10px] cursor-pointer rounded"

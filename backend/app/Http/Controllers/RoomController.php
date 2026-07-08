@@ -18,8 +18,10 @@ class RoomController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name'     => 'required|string|max:255',
-            'location' => 'nullable|string|max:255',
+            'name'           => 'required|string|max:255',
+            'location'       => 'nullable|string|max:255',
+            'temp_threshold' => 'sometimes|numeric|between:0,50',
+            'motion_timeout' => 'sometimes|integer|min:5',
         ]);
 
         $room = Room::create($data);
@@ -38,8 +40,10 @@ class RoomController extends Controller
     {
         $room = Room::findOrFail($id);
         $data = $request->validate([
-            'name'     => 'sometimes|required|string|max:255',
-            'location' => 'nullable|string|max:255',
+            'name'           => 'sometimes|required|string|max:255',
+            'location'       => 'nullable|string|max:255',
+            'temp_threshold' => 'sometimes|numeric|between:0,50',
+            'motion_timeout' => 'sometimes|integer|min:5',
         ]);
 
         $room->update($data);

@@ -33,15 +33,14 @@ class ProcessAutomation extends Command
     {
         $this->info("Starting Smart Classroom automation processor...");
 
-        // Inactivity timeout configuration (Demo Mode: 30 seconds / Production Mode: 15 minutes)
-        // Set this to 30 seconds for the live presentation, or read from env.
-        $inactivitySeconds = env('AUTO_OFF_TIMEOUT_SECONDS', 30);
-        $tempThreshold = env('AUTO_FAN_TEMP_THRESHOLD', 30.0);
-
         $rooms = Room::all();
 
         foreach ($rooms as $room) {
-            $this->info("Processing Room: {$room->name}");
+            // Load custom settings for this room
+            $inactivitySeconds = $room->motion_timeout ?? 900;
+            $tempThreshold = $room->temp_threshold ?? 30.0;
+
+            $this->info("Processing Room: {$room->name} (Threshold: {$tempThreshold}°C, Timeout: {$inactivitySeconds}s)");
 
             // 1. Check if there are any recent logs to confirm the ESP32 is online
             $hasRecentLogs = SensorLog::where('room_id', $room->id)

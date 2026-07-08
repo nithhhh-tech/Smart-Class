@@ -76,8 +76,22 @@ export const roomService = {
     const res = await API.get('/rooms');
     return res.data.data;
   },
-  addRoom: async (name, location) => {
-    const res = await API.post('/rooms', { name, location });
+  addRoom: async (name, location, tempThreshold = 30.0, motionTimeout = 900) => {
+    const res = await API.post('/rooms', {
+      name,
+      location,
+      temp_threshold: tempThreshold,
+      motion_timeout: motionTimeout
+    });
+    return res.data.data;
+  },
+  updateRoom: async (id, name, location, tempThreshold, motionTimeout) => {
+    const res = await API.put(`/rooms/${id}`, {
+      name,
+      location,
+      temp_threshold: tempThreshold,
+      motion_timeout: motionTimeout
+    });
     return res.data.data;
   },
   deleteRoom: async (id) => {
