@@ -30,9 +30,18 @@ class ProcessSchedules extends Command
     {
         $now = Carbon::now();
         $currentTime = $now->format('H:i');
-        $currentDay = strtolower($now->format('D')); // e.g. mon, tue, wed...
+        $currentDay = strtolower($now->format('l')); // e.g. monday, tuesday, wednesday...
 
         $this->info("Scanning schedules matching Day: {$currentDay} | Time: {$currentTime}");
+
+        // Check if today is a registered holiday
+        $today = Carbon::today()->toDateString();
+        $isHoliday = \App\Models\Holiday::where('holiday_date', $today)->exists();
+
+        if ($isHoliday) {
+            $this->info("Today is a registered holiday ({$today}). Skipping schedule automation.");
+            return;
+        }
 
         $schedules = Schedule::where('is_active', true)->get();
         $triggeredCount = 0;

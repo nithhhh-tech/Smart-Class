@@ -13,6 +13,7 @@ $app = Application::configure(basePath: dirname(__DIR__))
     )
     ->withSchedule(function (\Illuminate\Console\Scheduling\Schedule $schedule): void {
         $schedule->command('app:process-schedules')->everyMinute();
+        $schedule->command('app:process-automation')->everyMinute();
     })
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->statefulApi();
@@ -20,7 +21,5 @@ $app = Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();
-
-$app->useDatabasePath(dirname(dirname(__DIR__)) . '/database');
 
 return $app;

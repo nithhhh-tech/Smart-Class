@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'http://localhost:8000/api',
+  baseURL: import.meta.env.VITE_API_URL || `http://${window.location.hostname}:8000/api`,
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
@@ -76,8 +76,22 @@ export const roomService = {
     const res = await API.get('/rooms');
     return res.data.data;
   },
-  addRoom: async (name, location) => {
-    const res = await API.post('/rooms', { name, location });
+  addRoom: async (name, location, tempThreshold = 30.0, motionTimeout = 900) => {
+    const res = await API.post('/rooms', {
+      name,
+      location,
+      temp_threshold: tempThreshold,
+      motion_timeout: motionTimeout
+    });
+    return res.data.data;
+  },
+  updateRoom: async (id, name, location, tempThreshold, motionTimeout) => {
+    const res = await API.put(`/rooms/${id}`, {
+      name,
+      location,
+      temp_threshold: tempThreshold,
+      motion_timeout: motionTimeout
+    });
     return res.data.data;
   },
   deleteRoom: async (id) => {
@@ -104,6 +118,14 @@ export const deviceService = {
   deleteDevice: async (id) => {
     await API.delete(`/devices/${id}`);
   },
+  updateDevice: async (id, roomId, name, type) => {
+    const res = await API.put(`/devices/${id}`, {
+      room_id: roomId,
+      name,
+      type,
+    });
+    return res.data.data;
+  },
   toggleDevice: async (id) => {
     const res = await API.post(`/devices/${id}/toggle`);
     return res.data.data;
@@ -119,6 +141,57 @@ export const telemetryService = {
   getHistory: async (roomId, hours = 24) => {
     const res = await API.get(`/sensor-logs/history?room_id=${roomId}&hours=${hours}`);
     return res.data.data;
+  },
+};
+
+// Schedule Management Endpoints
+export const scheduleService = {
+  getSchedules: async (roomId = null) => {
+    const url = roomId ? `/schedules?room_id=${roomId}` : '/schedules';
+    const res = await API.get(url);
+    return res.data.data;
+  },
+  addSchedule: async (roomId, deviceId, command, time, days) => {
+    const res = await API.post('/schedules', {
+      room_id: roomId,
+      device_id: deviceId,
+      action: command,
+      run_at: time.substring(0, 5),
+      days: Array.isArray(days) ? days.join(',') : days,
+    });
+    return res.data.data;
+  },
+  deleteSchedule: async (id) => {
+    await API.delete(`/schedules/${id}`);
+  },
+};
+
+// Holiday Management Endpoints
+export const holidayService = {
+  getHolidays: async () => {
+    const res = await API.get('/holidays');
+    return res.data.data;
+  },
+  addHoliday: async (name, holidayDate) => {
+    const res = await API.post('/holidays', {
+      name,
+      holiday_date: holidayDate,
+    });
+    return res.data.data;
+  },
+  deleteHoliday: async (id) => {
+    await API.delete(`/holidays/${id}`);
+  },
+};
+
+// Alert Management Endpoints
+export const alertService = {
+  getAlerts: async (roomId) => {
+    const res = await API.get(`/alerts?room_id=${roomId}`);
+    return res.data.data;
+  },
+  dismissAlert: async (id) => {
+    await API.delete(`/alerts/${id}`);
   },
 };
 

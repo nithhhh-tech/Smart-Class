@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { authService } from "../services/api";
-import { Cpu, AlertCircle, Loader } from "lucide-react";
+import { Cpu, AlertCircle, Loader, ArrowLeft } from "lucide-react";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -52,7 +52,18 @@ const Register = () => {
       <div className="fixed inset-0 blueprint-grid pointer-events-none z-0"></div>
       <div className="fixed inset-0 pointer-events-none z-0 bg-[radial-gradient(circle_at_center,rgba(29,78,216,0.15)_0%,#030712_70%)]"></div>
 
-      <div className="w-full max-w-md relative z-10">
+      {/* Back Button */}
+      <div className="absolute top-6 left-6 z-20">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-xs font-mono text-slate-400 hover:text-cyan-400 transition-all duration-300 py-1.5 px-3 border border-blue-950/80 bg-[#091124]/40 hover:bg-[#0f1d3a]/60 backdrop-blur-md rounded shadow-sm hover:shadow-[0_0_10px_rgba(34,211,238,0.1)]"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span>BACK</span>
+        </Link>
+      </div>
+
+      <div className="w-full max-w-lg relative z-10">
         {/* Header/Logo */}
         <div className="flex flex-col items-center mb-8">
           <Link to="/" className="flex items-center gap-2 group">

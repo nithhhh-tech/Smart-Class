@@ -1,5 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-import { roomService, deviceService, telemetryService } from "../services/api";
+import {
+  roomService,
+  deviceService,
+  telemetryService,
+  alertService,
+} from "../services/api";
 import {
   Thermometer,
   Droplets,
@@ -10,6 +15,7 @@ import {
   Zap,
   Calendar,
   Sliders,
+  AlertTriangle,
 } from "lucide-react";
 import { Line } from "react-chartjs-2";
 import {
@@ -38,6 +44,7 @@ ChartJS.register(
 const Dashboard = () => {
   const [rooms, setRooms] = useState([]);
   const [selectedRoomId, setSelectedRoomId] = useState("");
+  const [alerts, setAlerts] = useState([]);
 
   // Telemetry state
   const [telemetry, setTelemetry] = useState({
@@ -65,12 +72,15 @@ const Dashboard = () => {
   ]);
 
   const pollingRef = useRef(null);
-  const terminalEndRef = useRef(null);
+  const terminalContainerRef = useRef(null);
 
   // Auto-scroll console
   useEffect(() => {
-    if (terminalEndRef.current) {
-      terminalEndRef.current.scrollIntoView({ behavior: "smooth" });
+    if (terminalContainerRef.current) {
+      terminalContainerRef.current.scrollTo({
+        top: terminalContainerRef.current.scrollHeight,
+        behavior: "smooth",
+      });
     }
   }, [consoleLogs]);
 
@@ -166,6 +176,10 @@ const Dashboard = () => {
         setHistoryLogs(historyData);
       }
 
+      // 4. Fetch Active Alerts
+      const alertsData = await alertService.getAlerts(roomId);
+      setAlerts(alertsData);
+
       if (!isPoll) {
         addLog(
           `Synchronized active room telemetry and ${devicesData.length} device nodes.`,
@@ -177,6 +191,17 @@ const Dashboard = () => {
       if (!isPoll) {
         addLog("Error reading endpoint telemetry.", "error");
       }
+    }
+  };
+
+  const handleDismissAlert = async (alertId) => {
+    try {
+      await alertService.dismissAlert(alertId);
+      setAlerts(prev => prev.filter(a => a.id !== alertId));
+      addLog('Alert dismissed successfully.', 'success');
+    } catch (err) {
+      console.error(err);
+      addLog('Failed to dismiss anomaly warning.', 'error');
     }
   };
 
@@ -499,41 +524,68 @@ const Dashboard = () => {
             )}
           </div>
         </div>
-
-        {/* Classroom Console Terminal Log */}
+        {/* Classroom Anomaly Alerts */}
         <div className="bg-[#091124]/40 border border-blue-950 rounded-2xl p-6 backdrop-blur-md flex flex-col justify-between">
           <div>
-            <div className="flex items-center gap-2 text-emerald-400 font-semibold mb-4 text-sm font-mono border-b border-blue-950 pb-2">
-              <Terminal className="w-4 h-4" />
-              SYSTEM TELEMETRY TERMINAL LOG
+            <div className="flex items-center gap-2 text-rose-400 font-semibold mb-4 text-sm font-mono border-b border-blue-950 pb-2">
+              <AlertTriangle className="w-4 h-4 text-rose-500 animate-pulse" />
+              CLASSROOM ANOMALY ALERTS
             </div>
 
-            <div className="bg-[#030712] rounded-xl p-4 font-mono text-[11px] text-emerald-400 border border-blue-950 h-56 overflow-y-auto space-y-1.5 custom-scrollbar">
-              {consoleLogs.map((log, index) => {
-                let colorClass = "text-emerald-400";
-                if (log.type === "error") colorClass = "text-rose-400";
-                if (log.type === "warn") colorClass = "text-amber-400";
-                if (log.type === "success") colorClass = "text-cyan-400";
+            <div className="space-y-3">
+              <div className="bg-[#030712] rounded-xl p-4 font-mono text-[11px] text-emerald-400 border border-blue-950 h-36 overflow-y-auto space-y-1.5 custom-scrollbar">
+                {consoleLogs.map((log, index) => {
+                  let colorClass = "text-emerald-400";
+                  if (log.type === "error") colorClass = "text-rose-400";
+                  if (log.type === "warn") colorClass = "text-amber-400";
+                  if (log.type === "success") colorClass = "text-cyan-400";
 
-                return (
-                  <div
-                    key={index}
-                    className={`${colorClass} py-0.5 leading-relaxed`}
-                  >
-                    <span className="text-slate-500">[{log.time}]</span>{" "}
-                    <span className="font-bold">{log.text}</span>
+                  return (
+                    <div key={index} className={`${colorClass} py-0.5 leading-relaxed`}>
+                      <span className="text-slate-500">[{log.time}]</span>{" "}
+                      <span className="font-bold">{log.text}</span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="max-h-32 overflow-y-auto custom-scrollbar pr-1 space-y-3">
+                {alerts.length === 0 ? (
+                  <div className="text-slate-500 text-xs py-8 text-center font-mono">
+                    No active anomalies detected. All systems operating normally.
                   </div>
-                );
-              })}
-              <div ref={terminalEndRef} />
+                ) : (
+                  alerts.map((alert) => (
+                    <div
+                      key={alert.id}
+                      className="flex items-center justify-between p-3 bg-rose-950/10 border border-rose-950/30 rounded-xl gap-3 animate-fade-in"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-lg bg-rose-500/10 text-rose-500 shrink-0">
+                          <AlertTriangle className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <div className="text-xs font-bold text-slate-200">{alert.message}</div>
+                          <div className="text-[9px] text-slate-500 uppercase font-mono mt-0.5">
+                            {alert.type} &bull; {new Date(alert.triggered_at).toLocaleTimeString()}
+                          </div>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => handleDismissAlert(alert.id)}
+                        className="px-2.5 py-1 border border-rose-900/60 text-rose-400 bg-rose-950/20 hover:bg-rose-600 hover:text-white hover:border-rose-600 text-[9px] font-bold rounded transition cursor-pointer shrink-0"
+                      >
+                        DISMISS
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
           </div>
 
           <div className="mt-3 pt-3 border-t border-blue-950/40 flex justify-between items-center text-[10px] text-slate-500 font-mono">
-            <span>
-              <span className="font-sans">ពិនិត្យការតភ្ជាប់</span> (PING NODE
-              SYNC): SUCCESS
-            </span>
+            <span>HEALTH STATE: ONLINE</span>
             <span>LAST SYNC: {telemetry.last_update}</span>
           </div>
         </div>

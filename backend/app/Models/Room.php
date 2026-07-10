@@ -7,7 +7,7 @@ class Room extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'location'];
+    protected $fillable = ['name', 'location', 'temp_threshold', 'motion_timeout'];
 
     public function devices()    { return $this->hasMany(Device::class); }
     public function sensorLogs() { return $this->hasMany(SensorLog::class); }

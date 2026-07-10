@@ -67,10 +67,7 @@ const Landing = () => {
         <div className="tick-corners border border-blue-950/60 px-6 md:px-12 py-12 md:py-16 bg-[#091124]/40 backdrop-blur-md relative overflow-hidden shadow-[2xl] shadow-blue-950/20">
           <div className="radar-scan"></div>
           <div className="max-w-3xl relative z-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 border border-blue-800/60 bg-blue-950/30 font-mono text-[10px] uppercase tracking-[0.16em] text-blue-300/90 mb-8 rounded-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 node-pulse"></span>
-              ESP32 &rarr; MQTT &rarr; Laravel API &middot; React Web UI
-            </div>
+
 
             <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold tracking-[-0.02em] text-white leading-[1.12] mb-7">
               A blueprint for

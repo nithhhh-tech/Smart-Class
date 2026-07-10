@@ -68,15 +68,25 @@ class DeviceController extends Controller
     {
         $device = Device::findOrFail($id);
 
-        // Flip the device status immediately for UI responsiveness
-        $newStatus = !$device->status;
+        // Check if there is a pending command to determine the current effective status
+        $pendingCommand = DeviceCommand::where('device_id', $device->id)
+            ->where('status', 'pending')
+            ->latest()
+            ->first();
+
+        $effectiveStatus = $device->status;
+        if ($pendingCommand) {
+            $effectiveStatus = ($pendingCommand->command === 'on');
+        }
+
+        $newStatus = !$effectiveStatus;
         $targetCommand = $newStatus ? 'on' : 'off';
 
         // Update device status
         $device->update(['status' => $newStatus]);
 
         // Queue a command for the ESP32 to pick up
-        DeviceCommand::create([
+        $commandRecord = DeviceCommand::create([
             'device_id' => $device->id,
             'command'   => $targetCommand,
             'status'    => 'pending',
@@ -84,7 +94,12 @@ class DeviceController extends Controller
 
         return response()->json([
             'message' => "Toggle command '$targetCommand' queued",
-            'data'    => $device->fresh(),
+            'data'    => [
+                'id'        => $commandRecord->id,
+                'device_id' => $device->id,
+                'command'   => $targetCommand,
+                'status'    => $newStatus, // Retain boolean for frontend UI toggles
+            ],
         ]);
     }
 }
