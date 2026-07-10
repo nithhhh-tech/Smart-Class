@@ -67,16 +67,24 @@ const Layout = ({ children }) => {
             type="button"
             onClick={() => setMobileNavOpen((prev) => !prev)}
             className="md:hidden p-2 rounded border border-blue-950/40 text-slate-200 bg-[#020914]/70 hover:bg-[#091124] transition-colors duration-200"
-            aria-label={mobileNavOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-label={
+              mobileNavOpen ? "Close navigation menu" : "Open navigation menu"
+            }
           >
-            {mobileNavOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {mobileNavOpen ? (
+              <X className="w-5 h-5" />
+            ) : (
+              <Menu className="w-5 h-5" />
+            )}
           </button>
         </div>
 
         {/* Navigation */}
         <nav
           className={`w-full font-mono text-xs transition-[max-height,opacity] duration-300 ease-in-out overflow-hidden md:overflow-visible ${
-            mobileNavOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0 md:max-h-full md:opacity-100"
+            mobileNavOpen
+              ? "max-h-[500px] opacity-100"
+              : "max-h-0 opacity-0 md:max-h-full md:opacity-100"
           }`}
         >
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-2">

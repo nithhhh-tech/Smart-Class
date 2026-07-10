@@ -197,11 +197,11 @@ const Dashboard = () => {
   const handleDismissAlert = async (alertId) => {
     try {
       await alertService.dismissAlert(alertId);
-      setAlerts(prev => prev.filter(a => a.id !== alertId));
-      addLog('Alert dismissed successfully.', 'success');
+      setAlerts((prev) => prev.filter((a) => a.id !== alertId));
+      addLog("Alert dismissed successfully.", "success");
     } catch (err) {
       console.error(err);
-      addLog('Failed to dismiss anomaly warning.', 'error');
+      addLog("Failed to dismiss anomaly warning.", "error");
     }
   };
 
@@ -541,7 +541,10 @@ const Dashboard = () => {
                   if (log.type === "success") colorClass = "text-cyan-400";
 
                   return (
-                    <div key={index} className={`${colorClass} py-0.5 leading-relaxed`}>
+                    <div
+                      key={index}
+                      className={`${colorClass} py-0.5 leading-relaxed`}
+                    >
                       <span className="text-slate-500">[{log.time}]</span>{" "}
                       <span className="font-bold">{log.text}</span>
                     </div>
@@ -552,7 +555,8 @@ const Dashboard = () => {
               <div className="max-h-32 overflow-y-auto custom-scrollbar pr-1 space-y-3">
                 {alerts.length === 0 ? (
                   <div className="text-slate-500 text-xs py-8 text-center font-mono">
-                    No active anomalies detected. All systems operating normally.
+                    No active anomalies detected. All systems operating
+                    normally.
                   </div>
                 ) : (
                   alerts.map((alert) => (
@@ -565,9 +569,12 @@ const Dashboard = () => {
                           <AlertTriangle className="w-4 h-4" />
                         </div>
                         <div>
-                          <div className="text-xs font-bold text-slate-200">{alert.message}</div>
+                          <div className="text-xs font-bold text-slate-200">
+                            {alert.message}
+                          </div>
                           <div className="text-[9px] text-slate-500 uppercase font-mono mt-0.5">
-                            {alert.type} &bull; {new Date(alert.triggered_at).toLocaleTimeString()}
+                            {alert.type} &bull;{" "}
+                            {new Date(alert.triggered_at).toLocaleTimeString()}
                           </div>
                         </div>
                       </div>
