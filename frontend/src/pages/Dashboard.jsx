@@ -473,7 +473,9 @@ const Dashboard = () => {
         <div className="bg-[#091124]/40 border border-blue-950 rounded-2xl p-6 backdrop-blur-md relative overflow-hidden">
           <div className="flex items-center gap-2 text-blue-400 font-semibold mb-4 text-sm font-mono border-b border-blue-950 pb-2">
             <Zap className="w-4 h-4 text-yellow-500" />
-            <span className="text-xl font-sans">ផ្ទាំងបញ្ជាថាមពលឧបករណ៍</span>
+            <span className="text-sm font-semibold font-sans">
+              ផ្ទាំងបញ្ជាថាមពលឧបករណ៍
+            </span>
             (DEVICE POWER CONSOLE)
           </div>
 
@@ -554,9 +556,9 @@ const Dashboard = () => {
 
               <div className="max-h-32 overflow-y-auto custom-scrollbar pr-1 space-y-3">
                 {alerts.length === 0 ? (
-                  <div className="text-slate-500 text-xs py-8 text-center font-mono">
-                    No active anomalies detected. All systems operating
-                    normally.
+                  <div className="text-slate-500 text-xs py-4 text-center font-sans">
+                    មិនមានរកឃើញភាពមិនប្រក្រតីណាមួយឡើយ។
+                    ប្រព័ន្ធទាំងអស់កំពុងដំណើរការជាធម្មតា។
                   </div>
                 ) : (
                   alerts.map((alert) => (
@@ -592,8 +594,13 @@ const Dashboard = () => {
           </div>
 
           <div className="mt-3 pt-3 border-t border-blue-950/40 flex justify-between items-center text-[10px] text-slate-500 font-mono">
-            <span>HEALTH STATE: ONLINE</span>
-            <span>LAST SYNC: {telemetry.last_update}</span>
+            <span>
+              HEALTH STATE:<span className="text-emerald-400"> ONLINE</span>
+            </span>
+            <span>
+              LAST <span className="text-blue-400">SYNC</span>:{" "}
+              {telemetry.last_update}
+            </span>
           </div>
         </div>
       </div>
