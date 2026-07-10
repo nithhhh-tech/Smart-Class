@@ -47,9 +47,10 @@ const Layout = ({ children }) => {
       <div className="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full pointer-events-none z-0 bg-cyan-600/5 blur-[120px]"></div>
 
       {/* Header */}
-      <header className="w-full max-w-7xl mx-auto px-6 py-4 flex flex-col gap-4 border-b border-blue-950/40 backdrop-blur-md bg-[#030712]/30 relative z-10">
-        <div className="w-full flex items-center justify-between gap-4">
-          <Link to="/" className="flex items-center gap-3 group">
+      <header className="w-full max-w-7xl mx-auto px-5 py-3 flex flex-col gap-2 border-b border-blue-950/40 backdrop-blur-md bg-[#030712]/30 relative z-10">
+        <div className="w-full flex items-center justify-between md:justify-start gap-6 min-h-[46px]">
+          {/* 1. Logo (Stays left) */}
+          <Link to="/" className="flex items-center gap-3 group shrink-0">
             <div className="w-10 h-10 flex items-center justify-center border border-blue-500/30 rounded bg-blue-950/40 group-hover:border-cyan-400/60 transition-colors duration-300 shadow-[0_0_15px_rgba(29,78,216,0.1)]">
               <Cpu className="w-5 h-5 text-blue-400 opacity-90 group-hover:text-cyan-400 transition-colors duration-300" />
             </div>
@@ -63,31 +64,82 @@ const Layout = ({ children }) => {
             </div>
           </Link>
 
-          <button
-            type="button"
-            onClick={() => setMobileNavOpen((prev) => !prev)}
-            className="md:hidden p-2 rounded border border-blue-950/40 text-slate-200 bg-[#020914]/70 hover:bg-[#091124] transition-colors duration-200"
-            aria-label={
-              mobileNavOpen ? "Close navigation menu" : "Open navigation menu"
-            }
-          >
-            {mobileNavOpen ? (
-              <X className="w-5 h-5" />
-            ) : (
-              <Menu className="w-5 h-5" />
+          {/* 2. Middle Nav (Centered on desktop, hidden on mobile) */}
+          <nav className="hidden md:flex flex-1 items-center justify-center gap-2 text-xs font-mono">
+            <Link
+              to="/dashboard"
+              onClick={() => setMobileNavOpen(false)}
+              className={`h-10 flex items-center gap-2 px-3.5 border transition-all duration-300 ${isActive("/dashboard") ? "border-blue-500 text-blue-400 bg-blue-950/30" : "border-blue-950/40 text-slate-400"}`}
+            >
+              <LayoutDashboard className="w-3.5 h-3.5" /> DASHBOARD
+            </Link>
+            <Link
+              to="/classrooms"
+              onClick={() => setMobileNavOpen(false)}
+              className={`h-10 flex items-center gap-2 px-3.5 border transition-all duration-300 ${isActive("/classrooms") ? "border-blue-500 text-blue-400 bg-blue-950/30" : "border-blue-950/40 text-slate-400"}`}
+            >
+              <School className="w-3.5 h-3.5" /> CLASSROOMS
+            </Link>
+            <Link
+              to="/devices"
+              onClick={() => setMobileNavOpen(false)}
+              className={`h-10 flex items-center gap-2 px-3.5 border transition-all duration-300 ${isActive("/devices") ? "border-blue-500 text-blue-400 bg-blue-950/30" : "border-blue-950/40 text-slate-400"}`}
+            >
+              <Cpu className="w-3.5 h-3.5" /> DEVICES
+            </Link>
+            <Link
+              to="/schedules"
+              onClick={() => setMobileNavOpen(false)}
+              className={`h-10 flex items-center gap-2 px-3.5 border transition-all duration-300 ${isActive("/schedules") ? "border-blue-500 text-blue-400 bg-blue-950/30" : "border-blue-950/40 text-slate-400"}`}
+            >
+              <CalendarDays className="w-3.5 h-3.5" /> SCHEDULES
+            </Link>
+          </nav>
+
+          {/* 3. Right Container (Hamburger on mobile / Profile on desktop) */}
+          {/* Added md:ml-auto so it handles desktop spacing gracefully */}
+          <div className="flex items-center gap-3 shrink-0 md:ml-auto">
+            {user && (
+              <div className="hidden md:flex items-center gap-3">
+                <div className="flex text-sm items-center gap-2 font-mono text-slate-300 bg-blue-950/20 px-3 h-8 border border-blue-950/40">
+                  <UserIcon className="w-3.5 h-3.5 text-blue-400" />
+                  <span>{user.name}</span>
+                </div>
+                <button
+                  onClick={() => {
+                    setMobileNavOpen(false);
+                    handleLogout();
+                  }}
+                  className="h-8 text-sm px-3 font-mono border border-rose-950 text-rose-400 bg-rose-950/10 hover:bg-rose-500 transition-all duration-300 flex items-center gap-1 cursor-pointer"
+                >
+                  <LogOut className="w-3.5 h-3.5" /> Exit
+                </button>
+              </div>
             )}
-          </button>
+
+            <button
+              type="button"
+              onClick={() => setMobileNavOpen((prev) => !prev)}
+              className="md:hidden p-2 rounded border border-blue-950/40 text-slate-200 bg-[#020914]/70"
+              aria-label={
+                mobileNavOpen ? "Close navigation menu" : "Open navigation menu"
+              }
+            >
+              {mobileNavOpen ? (
+                <X className="w-5 h-5" />
+              ) : (
+                <Menu className="w-5 h-5" />
+              )}
+            </button>
+          </div>
         </div>
 
-        {/* Navigation */}
         <nav
-          className={`w-full font-mono text-xs transition-[max-height,opacity] duration-300 ease-in-out overflow-hidden md:overflow-visible ${
-            mobileNavOpen
-              ? "max-h-[500px] opacity-100"
-              : "max-h-0 opacity-0 md:max-h-full md:opacity-100"
+          className={`w-full font-mono text-xs transition-[max-height,opacity] duration-300 ease-in-out overflow-hidden md:hidden ${
+            mobileNavOpen ? "max-h-125 opacity-100" : "max-h-0 opacity-0"
           }`}
         >
-          <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-2">
+          <div className="flex flex-col gap-3 mt-3">
             <Link
               to="/dashboard"
               onClick={() => setMobileNavOpen(false)}
@@ -136,26 +188,26 @@ const Layout = ({ children }) => {
               <CalendarDays className="w-3.5 h-3.5" />
               SCHEDULES
             </Link>
-          </div>
 
-          {user && (
-            <div className="mt-4 flex flex-col gap-3 md:flex-row md:items-center md:gap-4 md:mt-0">
-              <div className="flex items-center gap-2 text-slate-300 bg-blue-950/20 px-3 py-1.5 border border-blue-950/40">
-                <UserIcon className="w-3.5 h-3.5 text-blue-400" />
-                <span>{user.name}</span>
+            {user && (
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-2 text-slate-300 bg-blue-950/20 px-3 py-1.5 border border-blue-950/40">
+                  <UserIcon className="w-3.5 h-3.5 text-blue-400" />
+                  <span>{user.name}</span>
+                </div>
+                <button
+                  onClick={() => {
+                    setMobileNavOpen(false);
+                    handleLogout();
+                  }}
+                  className="px-3 py-1.5 border border-rose-950 text-rose-400 bg-rose-950/10 hover:bg-rose-500 hover:text-white hover:border-rose-500 transition-all duration-300 flex items-center gap-1 cursor-pointer"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  EXIT
+                </button>
               </div>
-              <button
-                onClick={() => {
-                  setMobileNavOpen(false);
-                  handleLogout();
-                }}
-                className="px-3 py-1.5 border border-rose-950 text-rose-400 bg-rose-950/10 hover:bg-rose-500 hover:text-white hover:border-rose-500 transition-all duration-300 flex items-center gap-1 cursor-pointer"
-              >
-                <LogOut className="w-3.5 h-3.5" />
-                EXIT
-              </button>
-            </div>
-          )}
+            )}
+          </div>
         </nav>
       </header>
 
