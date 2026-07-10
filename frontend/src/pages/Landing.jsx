@@ -67,8 +67,6 @@ const Landing = () => {
         <div className="tick-corners border border-blue-950/60 px-6 md:px-12 py-12 md:py-16 bg-[#091124]/40 backdrop-blur-md relative overflow-hidden shadow-[2xl] shadow-blue-950/20">
           <div className="radar-scan"></div>
           <div className="max-w-3xl relative z-10">
-
-
             <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold tracking-[-0.02em] text-white leading-[1.12] mb-7">
               A blueprint for
               <br />
@@ -224,7 +222,6 @@ const Landing = () => {
               <text x="150" y="98" fill="#06b6d4" fontWeight="500">
                 TEMP / HUM
               </text>
-
               <circle
                 cx="650"
                 cy="80"
@@ -241,19 +238,16 @@ const Landing = () => {
                 className="node-pulse"
                 style={{ animationDelay: ".4s" }}
               />
-              <text x="650" y="65" textAnchor="end" fontWeight="500">
-                MQ135
-              </text>
+              <text x="650" y="65" textAnchor="end" fontWeight="500"></text>
+              {/*MQ135*/}
               <text
                 x="650"
                 y="98"
                 fill="#06b6d4"
                 textAnchor="end"
                 fontWeight="500"
-              >
-                AIR QUALITY
-              </text>
-
+              ></text>
+              {/*AIR QUALITY*/}
               <circle
                 cx="150"
                 cy="220"
@@ -276,7 +270,6 @@ const Landing = () => {
               <text x="150" y="252" fill="#3b82f6" fontWeight="500">
                 MOTION
               </text>
-
               <circle
                 cx="650"
                 cy="220"
@@ -305,7 +298,6 @@ const Landing = () => {
               >
                 LIGHTS / FANS
               </text>
-
               <circle
                 cx="400"
                 cy="60"
